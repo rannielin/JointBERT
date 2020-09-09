@@ -4,7 +4,7 @@ import logging
 
 import torch
 import numpy as np
-from seqeval.metrics import precision_score, recall_score, f1_score
+from sklearn.metrics import precision_score, recall_score, f1_score
 
 from transformers import BertConfig, DistilBertConfig, AlbertConfig
 from transformers import BertTokenizer, DistilBertTokenizer, AlbertTokenizer
@@ -74,9 +74,10 @@ def get_slot_metrics(preds, labels):
 
 
 def get_intent_acc(preds, labels):
-    acc = (preds == labels).mean()
     return {
-        "intent_acc": acc
+        "intent_precision": precision_score(labels, preds),
+        "intent_recall": recall_score(labels, preds),
+        "intent_f1": f1_score(labels, preds)
     }
 
 
