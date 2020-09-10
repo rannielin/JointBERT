@@ -4,6 +4,10 @@ from transformers.modeling_bert import BertPreTrainedModel, BertModel, BertConfi
 from torchcrf import CRF
 from .module import IntentClassifier, SlotClassifier
 
+proxies = {
+  "http": "http://10.10.1.10:3128",
+  "https": "https://10.10.1.10:1080",
+}
 
 class JointBERT(BertPreTrainedModel):
     def __init__(self, config, args, intent_label_lst, slot_label_lst):
