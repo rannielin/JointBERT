@@ -11,6 +11,11 @@ from transformers import BertTokenizer, DistilBertTokenizer, AlbertTokenizer
 
 from model import JointBERT, JointDistilBERT, JointAlbert
 
+proxies = {
+  "http": "http://10.10.1.10:3128",
+  "https": "https://10.10.1.10:1080",
+}
+
 MODEL_CLASSES = {
     'bert': (BertConfig, JointBERT, BertTokenizer),
     'distilbert': (DistilBertConfig, JointDistilBERT, DistilBertTokenizer),
@@ -33,7 +38,7 @@ def get_slot_labels(args):
 
 
 def load_tokenizer(args):
-    return MODEL_CLASSES[args.model_type][2].from_pretrained(args.model_name_or_path)
+    return MODEL_CLASSES[args.model_type][2].from_pretrained(args.model_name_or_path, proxies=proxies)
 
 
 def init_logger():
@@ -67,17 +72,17 @@ def compute_metrics(intent_preds, intent_labels, slot_preds, slot_labels):
 def get_slot_metrics(preds, labels):
     assert len(preds) == len(labels)
     return {
-        "slot_precision": precision_score(labels, preds),
-        "slot_recall": recall_score(labels, preds),
-        "slot_f1": f1_score(labels, preds)
+        "slot_precision": precision_score(labels, preds, average='micro'),
+        "slot_recall": recall_score(labels, preds, average='micro'),
+        "slot_f1": f1_score(labels, preds, average='micro')
     }
 
 
 def get_intent_acc(preds, labels):
     return {
-        "intent_precision": precision_score(labels, preds),
-        "intent_recall": recall_score(labels, preds),
-        "intent_f1": f1_score(labels, preds)
+        "intent_precision": precision_score(labels, preds, average='micro'),
+        "intent_recall": recall_score(labels, preds, average='micro'),
+        "intent_f1": f1_score(labels, preds, average='micro')
     }
 
 

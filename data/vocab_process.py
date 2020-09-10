@@ -44,5 +44,6 @@ def vocab_process(data_dir):
 
 
 if __name__ == "__main__":
-    vocab_process('atis')
-    vocab_process('snips')
+    # vocab_process('atis')
+    # vocab_process('snips')
+    vocab_process('finn')
