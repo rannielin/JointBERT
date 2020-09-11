@@ -4,18 +4,15 @@ import logging
 
 import torch
 import numpy as np
-#from sklearn.metrics import precision_score, recall_score, f1_score
-from seqeval.metrics import precision_score, recall_score, f1_score
+from sklearn.metrics import precision_score, recall_score, f1_score
+from functools import reduce
+#from seqeval.metrics import precision_score, recall_score, f1_score
 
 from transformers import BertConfig, DistilBertConfig, AlbertConfig
 from transformers import BertTokenizer, DistilBertTokenizer, AlbertTokenizer
 
 from model import JointBERT, JointDistilBERT, JointAlbert
 
-proxies = {
-  "http": "http://10.10.1.10:3128",
-  "https": "https://10.10.1.10:1080",
-}
 
 MODEL_CLASSES = {
     'bert': (BertConfig, JointBERT, BertTokenizer),
@@ -39,7 +36,7 @@ def get_slot_labels(args):
 
 
 def load_tokenizer(args):
-    return MODEL_CLASSES[args.model_type][2].from_pretrained(args.model_name_or_path, proxies=proxies)
+    return MODEL_CLASSES[args.model_type][2].from_pretrained(args.model_name_or_path)
 
 
 def init_logger():
@@ -61,29 +58,37 @@ def compute_metrics(intent_preds, intent_labels, slot_preds, slot_labels):
     results = {}
     intent_result = get_intent_acc(intent_preds, intent_labels)
     slot_result = get_slot_metrics(slot_preds, slot_labels)
-    sementic_result = get_sentence_frame_acc(intent_preds, intent_labels, slot_preds, slot_labels)
+    # sementic_result = get_sentence_frame_acc(intent_preds, intent_labels, slot_preds, slot_labels)
 
     results.update(intent_result)
     results.update(slot_result)
-    results.update(sementic_result)
+    # results.update(sementic_result)
 
     return results
 
 
 def get_slot_metrics(preds, labels):
     assert len(preds) == len(labels)
+    preds = reduce(lambda x,y :x + y ,preds)
+    labels = reduce(lambda x,y :x + y ,labels)
     return {
-        "slot_precision": precision_score(labels, preds),
-        "slot_recall": recall_score(labels, preds),
-        "slot_f1": f1_score(labels, preds)
+        "slot_precision_weighted": precision_score(labels, preds, average = 'weighted'),
+        "slot_recall_weighted": recall_score(labels, preds, average = 'weighted'),
+        "slot_f1_weighted": f1_score(labels, preds, average = 'weighted'),
+        "slot_precision_macro": precision_score(labels, preds, average = 'macro'),
+        "slot_recall_macro": recall_score(labels, preds, average = 'macro'),
+        "slot_f1_macro": f1_score(labels, preds, average = 'macro')
     }
 
 
 def get_intent_acc(preds, labels):
     return {
-        "intent_precision": precision_score(labels, preds),
-        "intent_recall": recall_score(labels, preds),
-        "intent_f1": f1_score(labels, preds)
+        "intent_precision_weighted": precision_score(labels, preds, average = 'weighted'),
+        "intent_recall_weighted": recall_score(labels, preds, average = 'weighted'),
+        "intent_f1_weighted": f1_score(labels, preds, average = 'weighted'),
+        "intent_precision_macro": precision_score(labels, preds, average = 'macro'),
+        "intent_recall_macro": recall_score(labels, preds, average = 'macro'),
+        "intent_f1_macro": f1_score(labels, preds, average = 'macro')
     }
 
 

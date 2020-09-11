@@ -94,6 +94,7 @@ class Trainer(object):
 
                 tr_loss += loss.item()
                 if (step + 1) % self.args.gradient_accumulation_steps == 0:
+
                     torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.args.max_grad_norm)
 
                     optimizer.step()
@@ -101,11 +102,11 @@ class Trainer(object):
                     self.model.zero_grad()
                     global_step += 1
 
-                    if self.args.logging_steps > 0 and global_step % self.args.logging_steps == 0:
-                        self.evaluate("dev")
+                    #if self.args.logging_steps > 0 and global_step % self.args.logging_steps == 0:
+                    self.evaluate("dev")
 
-                    if self.args.save_steps > 0 and global_step % self.args.save_steps == 0:
-                        self.save_model()
+                    #if self.args.save_steps > 0 and global_step % self.args.save_steps == 0:
+                    self.save_model()
 
                 if 0 < self.args.max_steps < global_step:
                     epoch_iterator.close()
@@ -208,7 +209,7 @@ class Trainer(object):
 
         logger.info("***** Eval results *****")
         for key in sorted(results.keys()):
-            logger.info("  %s = %s", key, str(results[key]))
+            print(key, str(results[key]))
 
         return results
 
