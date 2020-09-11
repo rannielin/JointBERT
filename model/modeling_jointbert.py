@@ -16,6 +16,9 @@ class JointBERT(BertPreTrainedModel):
         self.num_intent_labels = len(intent_label_lst)
         self.num_slot_labels = len(slot_label_lst)
         self.bert = BertModel(config=config)  # Load pretrained bert
+        if args.freeze_bert:
+            for param in self.bert.parameters():
+                param.requires_grad = False
 
         self.intent_classifier = IntentClassifier(config.hidden_size, self.num_intent_labels, args.dropout_rate)
         self.slot_classifier = SlotClassifier(config.hidden_size, self.num_slot_labels, args.dropout_rate)
