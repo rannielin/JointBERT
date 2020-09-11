@@ -58,11 +58,11 @@ def compute_metrics(intent_preds, intent_labels, slot_preds, slot_labels):
     results = {}
     intent_result = get_intent_acc(intent_preds, intent_labels)
     slot_result = get_slot_metrics(slot_preds, slot_labels)
-    # sementic_result = get_sentence_frame_acc(intent_preds, intent_labels, slot_preds, slot_labels)
+    sementic_result = get_sentence_frame_acc(intent_preds, intent_labels, slot_preds, slot_labels)
 
     results.update(intent_result)
     results.update(slot_result)
-    # results.update(sementic_result)
+    results.update(sementic_result)
 
     return results
 
